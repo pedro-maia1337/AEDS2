@@ -18,7 +18,7 @@ typedef struct no {
 } No;
 
 Pessoa adicionar_pessoa() {
-    Pessoa p;
+    Pessoa p;   
 
     printf("\nDigite o nome e data de nascimento da pessoa: ");
     scanf("%49[^\n]%d%d%d", p.nome, &p.data.dia, &p.data.mes, &p.data.ano);
