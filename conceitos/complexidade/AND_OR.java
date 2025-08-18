@@ -1,4 +1,4 @@
-class AND_OR {
+public class AND_OR {
    public static boolean m1(){
       System.out.println("m1");
       return true;
