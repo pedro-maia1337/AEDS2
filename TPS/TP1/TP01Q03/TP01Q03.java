@@ -42,6 +42,20 @@ class TP01Q03 {
         return strCrip;
     }
 
+    public static boolean compare(String str1, String str2){ //Metódo criado para comparar duas strings, substituindo o metódo equals
+        if(str1.length() != str2.length()) {
+            return false;
+        }
+
+        for(int i = 0; i < str1.length() - 1; i = i + 1){
+            if(str1.charAt(i) != str2.charAt(i)){ //Caso encontre diferença retorna false;
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public static void main(String[] args) {
         String str = new String();
         Scanner sc = new Scanner(System.in); //Ler da entrada padrão (Teclado)
@@ -50,14 +64,14 @@ class TP01Q03 {
         while(sc.hasNext()) { // Ler em LOOP
             str = sc.nextLine(); // Solicita nova entrada
 
-            if(str.equals("FIM")) { //Caso leia "fim" para o LOOP
+            if(compare(str, "FIM")) { //Verifica se as duas strings são iguais, caso sejam para o loop pois encontrou FIM 
                 sc.close();
                 return;
             }
 
-            strCrip = criptografia(str);
+            strCrip = criptografia(str); //Chama função para criptografia
 
-            System.out.println(strCrip); //Chama função para criptografia
+            System.out.println(strCrip); 
         }
 
         sc.close(); 

@@ -18,11 +18,25 @@ class TP01Q01 {
             reverse_string = reverse_string + str.charAt(i);
         }
 
-        if(reverse_string.equals(str)){
+        if(compare(reverse_string, str)){ //Utilizando método de comparação para verificar se a string inversa é igual a original 
             flag = true;
         }    
 
         return flag; 
+    }
+
+    public static boolean compare(String str1, String str2){ //Metódo criado para comparar duas strings, substituindo o metódo equals
+        if(str1.length() != str2.length()) {
+            return false;
+        }
+
+        for(int i = 0; i < str1.length() - 1; i = i + 1){
+            if(str1.charAt(i) != str2.charAt(i)){ //Casp encontre diferença retorna false;
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public static void main(String[] args){
@@ -33,7 +47,7 @@ class TP01Q01 {
         while(sc.hasNext()) { // Ler em LOOP
             str = sc.nextLine(); // Solicita nova entrada
 
-            if(str.equals("FIM")) { //Caso leia "FIM" para o LOOP
+            if(compare(str, "FIM")) { //Caso leia "FIM" para o LOOP
                 sc.close();
                 return;
             }
