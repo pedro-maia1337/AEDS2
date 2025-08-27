@@ -6,10 +6,13 @@ class Ord {
 		vetor[j] = temp;
 	}
 
+
+
+    // n = 3(n - 1) - movimentações
+    // f(c) = n (n - 1) / 2 - comparações 
     public static void selecao(int vetor[], int n) { //O(n^2)
         int mov = 0;
         int comp = 0;
-        int aux = 0;
 
         for(int i = 0; i < (n - 1); i = i + 1){
             int menor = i;

@@ -40,7 +40,7 @@ class Pesq {
         }
 
         //test = pesquisa_sequencial(vetor, n, 5);
-        test = pesquisa_bin(vetor, n, 10);
+        test = pesquisa_bin(vetor, n, 6);
 
         if(test) {
             System.out.println("ENCONTRADO");
