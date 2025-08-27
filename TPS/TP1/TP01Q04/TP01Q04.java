@@ -17,28 +17,29 @@ import java.util.Random;
 
 class TP01Q04 {
 
-    public static String alt(String str){
+    public static String alt(String str){ //Metódo para realizar a alteração
         char letra1;
         char letra2;
         int len = str.length();
-        char[] newStr = new char[len];
-        Random gerador = new Random();
-        gerador.setSeed(4);
+        char[] newStr = new char[len]; //cadeia de caracteres para copiar a string passada por parametro, já que string é um tipo imutável em java
 
-        letra1 = (char) ('a' + (Math.abs(gerador.nextInt()) % 26));
-        letra2 = (char) ('a' + (Math.abs(gerador.nextInt()) % 26));
+        Random gerador = new Random(); //Invocando objeto random
+        gerador.setSeed(4); //definindo o seed
 
-        for(int i = 0; i < str.length(); i = i + 1) {
+        letra1 = (char) ('a' + (Math.abs(gerador.nextInt()) % 26)); //Gerando primeira letra aleatória
+        letra2 = (char) ('a' + (Math.abs(gerador.nextInt()) % 26)); //Gerando segunda letra aleatória
+
+        for(int i = 0; i < str.length(); i = i + 1) { // Copiando caracteres da string para a cadeia de caracteres
             newStr[i] = str.charAt(i);
         }
 
         for(int i = 0; i < str.length(); i = i + 1) {
-            if(newStr[i] == letra1){
+            if(newStr[i] == letra1) { //Caso encontre a ocorrencia da primeira letra realiza o swap para segunda letra
                 newStr[i] = letra2;   
             }
         }
 
-        return new String(newStr);
+        return new String(newStr); //Retornando e convertendo a cadeia de caracteres para string diretamente 
     }
 
     public static boolean compare(String str1, String str2){ //Metódo criado para comparar duas strings, substituindo o metódo equals
