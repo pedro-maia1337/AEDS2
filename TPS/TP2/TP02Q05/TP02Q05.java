@@ -1,41 +1,43 @@
 import java.util.*;
 
 class TP02Q05 {
-    public static boolean is_anagrama(String str1, String str2) {
+    /*public static boolean is_anagrama(String str1, String str2) {
         char char_str1;
         char chat_str2;
 
-        int int_str1 = 0;
-        int int_str2 = 0;
-        int aux = 0;
+
+        
 
         if(str1.length() != str2.length()) return false;
 
-        for(int i = 0; i < str1.length(); i = i + 1) {
-            int_str1 = (int) str1.charAt(i);
-            for(int j = 0; j < str2.length(); j = j + 1){
-                int_str2 = (int) str2.charAt(j);
-                if(int_str1 > int_str2) {
-                    aux = int_str2;
-                    int_str2 = int_str1;
-                    int_str1 = aux;
-                }
-            }
-        }
 
         if(count == str2.length()) return true;
 
         return false;
-    }
+    } */
 
 
     //Implementar metódo para ordernar string com base no seleção
     public static String sort_string(String str) {
-        String ord_str = " ";
+        int len = str.length();
+        char[] newStr = new char[len];
 
+        int menor = 0;
+        int aux = 0;
 
+        for(int i = 0; i < str.length() - 1; i = i + 1){
+            menor = i;
+            for(int j = i + 1; j < str.length(); j = j + 1) {
+                if((int)str.charAt(menor) > (int)str.charAt(j)){
+                    aux = (int) str.charAt(menor);
+                    newStr[i] = str.charAt(j);
+                    newStr[j] = (char) aux;
+                }
+            }
 
-        return ord_str;
+        }
+
+        return new String(newStr);
     }
 
     public static String converte_min(String str){
@@ -86,18 +88,24 @@ class TP02Q05 {
                 return;
             }
 
-            boolean test = false;
+            //boolean test = false;
 
             str1 = converte_min(str1);
             str2 = converte_min(str2);
 
-            test = is_anagrama(str1, str2);
+            str1 = sort_string(str1);
+            str2 = sort_string(str2);
 
-            if(test){
+            System.out.println(str1);
+            System.out.println(str2);
+
+            //test = is_anagrama(str1, str2);
+
+            /*if(test){
                 System.out.println("SIM");
             } else {
                 System.out.println("NÃO");
-            }
+            }*/
         }
 
         sc.close();
