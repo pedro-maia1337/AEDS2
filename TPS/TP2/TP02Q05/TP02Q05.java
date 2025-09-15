@@ -10,6 +10,7 @@ Na saída padrão, para cada par de strings de entrada, escreva uma linha de sa�
 import java.util.*;
 
 class TP02Q05 {
+<<<<<<< HEAD
 
     //Metódo para ordernar String alfabeticamente
      public static String sort_string(String str) {
@@ -37,6 +38,45 @@ class TP02Q05 {
     
         //Converte o array de char para string e retorna 
         return new String(arr);
+=======
+    /*public static boolean is_anagrama(String str1, String str2) {
+        char char_str1;
+        char chat_str2;
+
+
+        
+
+        if(str1.length() != str2.length()) return false;
+
+
+        if(count == str2.length()) return true;
+
+        return false;
+    } */
+
+
+    //Implementar metódo para ordernar string com base no seleção
+    public static String sort_string(String str) {
+        int len = str.length();
+        char[] newStr = new char[len];
+
+        int menor = 0;
+        int aux = 0;
+
+        for(int i = 0; i < str.length() - 1; i = i + 1){
+            menor = i;
+            for(int j = i + 1; j < str.length(); j = j + 1) {
+                if((int)str.charAt(menor) > (int)str.charAt(j)){
+                    aux = (int) str.charAt(menor);
+                    newStr[i] = str.charAt(j);
+                    newStr[j] = (char) aux;
+                }
+            }
+
+        }
+
+        return new String(newStr);
+>>>>>>> 04a4b2269b0767c5e28bc04b37ac9cbfc7884ba8
     }
 
     //Método para transformar string em lowercase
@@ -87,6 +127,10 @@ class TP02Q05 {
                 return;
             }
 
+<<<<<<< HEAD
+=======
+            //boolean test = false;
+>>>>>>> 04a4b2269b0767c5e28bc04b37ac9cbfc7884ba8
 
             hifen = sc.next(); // pega o caractere '-'
             str2 = sc.next();
@@ -99,11 +143,20 @@ class TP02Q05 {
             str1 = sort_string(str1);
             str2 = sort_string(str2);
 
+<<<<<<< HEAD
             if(compare(str1, str2)){ //Validando se a primeira string ordenada é igual a segunda, caso seja é um anagrama
+=======
+            System.out.println(str1);
+            System.out.println(str2);
+
+            //test = is_anagrama(str1, str2);
+
+            /*if(test){
+>>>>>>> 04a4b2269b0767c5e28bc04b37ac9cbfc7884ba8
                 System.out.println("SIM");
             } else {
                 System.out.println("NÃO");
-            }
+            }*/
         }
 
         sc.close();

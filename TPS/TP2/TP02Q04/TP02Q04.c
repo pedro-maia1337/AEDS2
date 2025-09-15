@@ -24,11 +24,24 @@ int soma_recursiva(int num, int dig, int soma){
 
 int main(void) {
     char str[255];
+<<<<<<< HEAD
     int num = 0;
     int result = 0;
 
     while(scanf("%s",str) != EOF) { // Ler enquanto FLAG diferente de 0
         if (strncmp(str, "FIM", 3) == 0 && strlen(str) == 3) { //Caso leia fim, muda flag para 1, parando o loop
+=======
+    int flag = 0;
+    int num = 0;
+    int result = 0;
+
+    while(!flag) { // Ler enquanto FLAG diferente de 0
+        fgets(str, 255, stdin);
+        str[strcspn(str, "\n")] = 0; //Remove o \0
+
+        if (strncmp(str, "FIM", 3) == 0 && strlen(str) == 3) { //Caso leia fim, muda flag para 1, parando o loop
+            flag = 1;
+>>>>>>> 04a4b2269b0767c5e28bc04b37ac9cbfc7884ba8
         } else {
             num = atoi(str); // Converte a string para um inteiro
 
