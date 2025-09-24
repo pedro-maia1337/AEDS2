@@ -1,0 +1,3 @@
+- Método para número de comparações / movimentações (falta implementar)
+- Adaptar código
+- Montar relatório (pasta imgs)
