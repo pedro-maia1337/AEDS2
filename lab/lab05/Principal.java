@@ -30,5 +30,7 @@ class Principal {
 		//algoritmo.mostrar();
 		System.out.println("Tempo para ordenar: " + (fim-inicio)/1000.0 + " s.");
 		System.out.println("isOrdenado: " + algoritmo.isOrdenado());
+		algoritmo.countMoves();
+		algoritmo.countComp();
 	}
 }

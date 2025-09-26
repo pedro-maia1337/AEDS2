@@ -147,6 +147,7 @@ class Geracao {
 		return resp;
 	}
 
+
 	/*
 	 * Metodo a ser implementado nas subclasses
 	 */
@@ -154,11 +155,11 @@ class Geracao {
 		System.out.println("Método a ser implementado nas subclasses.");
 	}
 
-    public void countMoves(int i){
-		System.out.println("Número de movimentações realizadas:" + mov);
+    public void countMoves(){
+		System.out.println("Número de movimentações realizadas: " + mov);
 	}
 
-    public void countComp(int i){
-		System.out.println("Número de comparações realizadas:" + cmp);
+    public void countComp(){
+		System.out.println("Número de comparações realizadas: " + cmp);
 	}
 }
