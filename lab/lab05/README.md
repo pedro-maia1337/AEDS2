@@ -3,3 +3,4 @@ arrays (ex: 100, 1.000, 10.000 elementos) e compare o tempo de execucao de cada 
 Utilize arrays ordenados, quase ordenados e aleat ́orios para testar o comportamento dos algorit-
 mos
 
+-Plotar gráficos pelo 

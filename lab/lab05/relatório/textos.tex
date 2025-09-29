@@ -1,0 +1,366 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%% Template de Artigo Adaptado para Trabalho de Diplomação do ICEI %%%%%%%%%%%%%%%%%%%%%%%%
+%% codificação UTF-8 - Abntex - Latex -  							     %%
+%% Autor:    Fábio Leandro Rodrigues Cordeiro  (fabioleandro@pucminas.br)                            %% 
+%% Co-autores: Prof. João Paulo Domingos Silva, Harison da Silva e Anderson Carvalho		     %%
+%% Revisores normas NBR (Padrão PUC Minas): Helenice Rego Cunha e Prof. Theldo Cruz                  %%
+%% Versão: 1.1     18 de dezembro 2015                                                               %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{\esp Código da Aplicação}
+
+\begin{adjustwidth}{-1cm}{-1cm} % Reduz as margens laterais só para este bloco
+\begin{lstlisting}[caption={Código da aplicação}, label={lst:codigo_quicksort}]
+import java.util.concurrent.ThreadLocalRandom;
+
+class Quicksort extends Geracao {
+
+    public Quicksort(){ super(); }
+    public Quicksort(int tamanho){ super(tamanho); }
+
+    @Override
+    public void sort(int i) {
+        if(i==1) QuickSortFirstPivot(0,n-1);
+        if(i==2) QuickSortLastPivot(0,n-1);
+        if(i==3) QuickSortRandomPivot(0,n-1);
+        if(i==4) QuickSortMedianOfThree(0,n-1);
+    }
+
+    private void QuickSortFirstPivot(int esq, int dir) {
+        int i=esq, j=dir, pivo=array[i];
+        while(i<=j){
+            while(array[i]<pivo){ cmp++; i++; }
+            while(array[j]>pivo){ cmp++; j--; }
+            if(i<=j){ swap(i,j); mov+=3; i++; j--; }
+        }
+        if(esq<j) QuickSortFirstPivot(esq,j);
+        if(i<dir) QuickSortFirstPivot(i,dir);
+    }
+
+    private void QuickSortLastPivot(int esq, int dir) {
+        int i=esq, j=dir, pivo=array[dir];
+        while(i<=j){
+            while(array[i]<pivo){ cmp++; i++; }
+            while(array[j]>pivo){ cmp++; j--; }
+            if(i<=j){ swap(i,j); mov+=3; i++; j--; }
+        }
+        if(esq<j) QuickSortLastPivot(esq,j);
+        if(i<dir) QuickSortLastPivot(i,dir);
+    }
+
+    private void QuickSortRandomPivot(int esq, int dir) {
+        int randomPivot=ThreadLocalRandom.current().nextInt(esq,dir+1);
+        int i=esq, j=dir, pivo=array[randomPivot];
+        while(i<=j){
+            while(array[i]<pivo){ cmp++; i++; }
+            while(array[j]>pivo){ cmp++; j--; }
+            if(i<=j){ swap(i,j); mov+=3; i++; j--; }
+        }
+        if(esq<j) QuickSortRandomPivot(esq,j);
+        if(i<dir) QuickSortRandomPivot(i,dir);
+    }
+
+    private void QuickSortMedianOfThree(int esq, int dir) {
+        int i=esq, j=dir, pivo=array[(dir+esq)/2];
+        while(i<=j){
+            while(array[i]<pivo){ cmp++; i++; }
+            while(array[j]>pivo){ cmp++; j--; }
+            if(i<=j){ swap(i,j); mov+=3; i++; j--; }
+        }
+        if(esq<j) QuickSortMedianOfThree(esq,j);
+        if(i<dir) QuickSortMedianOfThree(i,dir);
+    }
+}
+\end{lstlisting}
+\end{adjustwidth}
+
+
+\section{\esp Pivô como Primeiro Elemento}
+
+% ==============================
+% Tabela - Pivô Primeiro Elemento
+% ==============================
+\begin{table}[H]
+    \centering
+    \scriptsize
+    \caption{Comparação dos cenários com pivô sendo o primeiro elemento, considerando $n=1000$.}
+    \label{tab:pivo_primeiro}
+    
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|l|c|c|c|c|c|}
+        \hline
+        \textbf{Cenário} & \textbf{Ordem de Complexidade} & \textbf{Fórmula Comparações} & 
+        \textbf{Fórmula Movimentações} & \textbf{Nº Comparações} & \textbf{Nº Movimentações} \\ \hline
+        
+        \textbf{Array Crescente} 
+        & $O(n^2)$ 
+        & $C(n)=\frac{n(n-1)}{2}$ 
+        & $M(n)=3\cdot(n-1)$ 
+        & $499{,}500$ 
+        & $2{,}997$ \\ \hline
+        
+        \textbf{Parcialmente Ordenado} 
+        & Entre $O(n \log n)$ e $O(n^2)$ 
+        & *** 
+        & *** 
+        & $8{,}040$ 
+        & $20{,}751$ \\ \hline
+        
+        \textbf{Array Aleatório} 
+        & $O(n \log n)$ 
+        & $C(n)=n\cdot\log_2 n$ 
+        & $M(n)=3\cdot n\cdot\log_2 n$ 
+        & $7{,}902$ 
+        & $9{,}190$ \\ \hline
+    \end{tabular}
+    }
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \caption{Execução do Array Crescente}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_primeiro/Array_crescente.png}
+    \label{fig:pivo_primeiro_crescente}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{Execução do Array Parcialmente Ordenado}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_primeiro/Array_parcialmente_ordenado.png}
+    \label{fig:pivo_primeiro_parcialmente}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{Execução do Array Aleatório}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_primeiro/Array_random.png}
+    \label{fig:pivo_primeiro_random}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{Gráfico geral do cenário com pivô primeiro elemento}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_primeiro/pivo_primeiro.png}
+    \label{fig:pivo_primeiro_grafico}
+\end{figure}
+
+% ==============================
+% Seção: Pivô Último Elemento
+% ==============================
+\section{\esp Pivô como Último Elemento}
+
+\begin{table}[H]
+    \centering
+    \scriptsize
+    \caption{Comparação dos cenários com pivô sendo o ultimo elemento, considerando $n=1000$.}
+    \label{tab:pivo_primeiro}
+    
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|l|c|c|c|c|c|}
+        \hline
+        \textbf{Cenário} & \textbf{Ordem de Complexidade} & \textbf{Fórmula Comparações} & 
+        \textbf{Fórmula Movimentações} & \textbf{Nº Comparações} & \textbf{Nº Movimentações} \\ \hline
+        
+        \textbf{Array Crescente} 
+        & $O(n^2)$ (Pior Caso)
+        & $C(n)=\frac{n(n-1)}{2}$ 
+        & $M(n)=3\cdot(n-1)$ 
+        & $499{,}500$ 
+        & $2{,}997$ \\ \hline
+        
+        \textbf{Parcialmente Ordenado} 
+        & Entre $O(n \log n)$ e $O(n^2)$ 
+        & *** 
+        & *** 
+        & $8{,}040$ 
+        & $20{,}751$ \\ \hline
+        
+        \textbf{Array Aleatório} 
+        & $O(n \log n)$ (Caso Médio)
+        & ***
+        & ***
+        & $7{,}902$ 
+        & $9{,}190$ \\ \hline
+    \end{tabular}
+    }
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \caption{Execução do Array Crescente}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_ultimo/array_crescente.png}
+    \label{fig:pivo_ultimo_crescente}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{Execução do Array Parcialmente Ordenado}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_ultimo/array_parcialmente_ordenado.png}
+    \label{fig:pivo_ultimo_parcialmente}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{Execução do Array Aleatório}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_ultimo/array_random.png}
+    \label{fig:pivo_ultimo_random}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{Gráfico geral do cenário com pivô último elemento}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_ultimo/pivo_ultimo.png}
+    \label{fig:pivo_ultimo_grafico}
+\end{figure}
+
+% ==============================
+% Seção: Pivô Aleatório
+% ==============================
+\section{\esp Pivô Aleatório}
+
+\begin{table}[H]
+    \centering
+    \scriptsize
+    \caption{Comparação dos cenários com pivô aleatório, considerando $n=1000$.}
+    \label{tab:pivo_ultimo}
+    
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|l|c|c|c|c|c|}
+        \hline
+        \textbf{Cenário} & \textbf{Ordem de Complexidade} & \textbf{Fórmula Comparações} & 
+        \textbf{Fórmula Movimentações} & \textbf{Nº Comparações} & \textbf{Nº Movimentações} \\ \hline
+        
+        \textbf{Array Crescente} 
+        & $O(n \log n)$ (Caso médio)
+        & $C(n)=n\cdot\log_2 n$ 
+        & $M(n)=3\cdot n\cdot\log_2 n$ 
+        & $9{,}966$ 
+        & $29{,}897$ \\ \hline
+        
+        \textbf{Parcialmente Ordenado} 
+        & $O(n \log n)$ (Caso médio)
+        & $C(n)=n\cdot\log_2 n$ 
+        & $M(n)=3\cdot n\cdot\log_2 n$ 
+        & $9{,}966$ 
+        & $29{,}897$ \\ \hline
+        
+        \textbf{Array Aleatório} 
+        & $O(n \log n)$ (Caso médio)
+        & $C(n)=n\cdot\log_2 n$ 
+        & $M(n)=3\cdot n\cdot\log_2 n$ 
+        & $9{,}966$ 
+        & $29{,}897$ \\ \hline
+    \end{tabular}
+    }
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \caption{Execução do Array Crescente}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_aleatorio/array_crescente.png}
+    \label{fig:pivo_ultimo_crescente}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{Execução do Array Parcialmente Ordenado}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_aleatorio/array_parcialmente_ordenado.png}
+    \label{fig:pivo_ultimo_parcialmente}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{Execução do Array Aleatório}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_aleatorio/array_random.png}
+    \label{fig:pivo_ultimo_random}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{Gráfico geral do cenário com pivô último elemento}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_aleatorio/download.png}
+    \label{fig:pivo_ultimo_grafico}
+\end{figure}
+
+% ==============================
+% Seção: Pivô Mediana
+% ==============================
+\section{\esp Pivô como Mediana dos elementos do array}
+
+\begin{table}[H]
+    \centering
+    \scriptsize
+    \caption{Comparação dos cenários com pivô sendo a mediana, considerando $n=1000$.}
+    \label{tab:pivo_ultimo}
+    
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{|l|c|c|c|c|c|}
+        \hline
+        \textbf{Cenário} & \textbf{Ordem de Complexidade} & \textbf{Fórmula Comparações} & 
+        \textbf{Fórmula Movimentações} & \textbf{Nº Comparações} & \textbf{Nº Movimentações} \\ \hline
+        
+        \textbf{Array Crescente} 
+        & $O(n \log n)$ (Caso médio)
+        & $C(n)=n\cdot\log_2 n$ 
+        & $M(n)=3\cdot n\cdot\log_2 n$ 
+        & $9{,}966$ 
+        & $29{,}897$ \\ \hline
+        
+        \textbf{Parcialmente Ordenado} 
+        & $O(n \log n)$ (Caso médio)
+        & $C(n)=n\cdot\log_2 n$ 
+        & $M(n)=3\cdot n\cdot\log_2 n$ 
+        & $9{,}966$ 
+        & $29{,}897$ \\ \hline
+        
+        \textbf{Array Aleatório} 
+        & $O(n \log n)$ (Caso médio)
+        & $C(n)=n\cdot\log_2 n$ 
+        & $M(n)=3\cdot n\cdot\log_2 n$ 
+        & $9{,}966$ 
+        & $29{,}897$ \\ \hline
+    \end{tabular}
+    }
+\end{table}
+
+\begin{figure}[H]
+    \centering
+    \caption{Execução do Array Crescente}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_mediana/array_crescente.png}
+    \label{fig:pivo_ultimo_crescente}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{Execução do Array Parcialmente Ordenado}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_mediana/array_parcialmente_ordenado.png}
+    \label{fig:pivo_ultimo_parcialmente}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{Execução do Array Aleatório}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_mediana/array_random.png}
+    \label{fig:pivo_ultimo_random}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \caption{Gráfico geral do cenário com pivô último elemento}
+    \includegraphics[width=1.0\textwidth]{figuras/pivo_mediana/download.png}
+    \label{fig:pivo_ultimo_grafico}
+\end{figure}
+
+% ==============================
+% Conclusão
+% ==============================
+\section{\esp Considerações e Conclusão}
+
+A classificação lógica da pesquisa em exploratória, descritiva e explicativa representa não apenas uma organização didática do conhecimento metodológico, mas também uma estratégia prática fundamental para a condução científica eficaz. A pesquisa exploratória permite ao pesquisador identificar caminhos e construir bases iniciais sólidas; a pesquisa descritiva oferece um retrato fiel da realidade observada, permitindo comparações e formulações iniciais de padrões; e a pesquisa explicativa propicia o aprofundamento na compreensão dos fenômenos, estabelecendo relações causais que contribuem para o avanço da ciência.
+
+A escolha adequada do tipo de pesquisa a ser realizado deve considerar a maturidade do tema estudado, os objetivos científicos do estudo e as possibilidades metodológicas disponíveis. Mais do que uma escolha técnica, trata-se de uma decisão estratégica que impacta diretamente na qualidade dos dados obtidos e na robustez das conclusões. Assim, conhecer profundamente as características, potencialidades e limitações de cada tipo lógico de pesquisa é condição sine qua non para o desenvolvimento de estudos científicos relevantes, inovadores e socialmente úteis.
+
+\nocite{artigo01}
+\nocite{artigo02}
+\nocite{artigo03}
+\nocite{videoaula}
