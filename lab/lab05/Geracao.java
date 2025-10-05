@@ -45,6 +45,19 @@ class Geracao {
 		}
 	}
 
+	/**
+	 * Produz um array parcialmente ordenado
+	 */
+	public void parcial() {
+		for (int i = 0; i < n / 2; i++) {
+			array[i] = i;
+		}
+
+		for (int i = n / 2; i < n; i++) {
+			array[i] = n - 1 - i;
+		}
+	}
+
 
 	/**
 	 * Produz um array com numeros aleatorios.

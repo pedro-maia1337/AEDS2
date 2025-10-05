@@ -62,7 +62,6 @@ class Quicksort extends Geracao {
         
     }
 
-    //Melhor pior caso?
     private void QuickSortLastPivot(int esq, int dir) {
         int i = esq, j = dir;
         int pivo = array[dir];
@@ -87,7 +86,6 @@ class Quicksort extends Geracao {
         if (i < dir)  QuickSortLastPivot(i, dir);
     }
 
-    //Caso médio ?
     private void QuickSortRandomPivot(int esq, int dir) {
         int randomPivot = ThreadLocalRandom.current().nextInt(esq, dir + 1);
         int i = esq, j = dir;
@@ -113,7 +111,6 @@ class Quicksort extends Geracao {
         if (i < dir)  QuickSortRandomPivot(i, dir);
     }
 
-    //Melhor caso
     private void QuickSortMedianOfThree(int esq, int dir) {
         int i = esq, j = dir;
         int pivo = array[(dir+esq)/2];
