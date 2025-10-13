@@ -89,16 +89,30 @@ class Game {
     public void setGenres(String[] genres)                          {this.genres = genres;}
     public void setTags(String[] tags)                              {this.tags = tags;}
 
-// Função para imprimir os jogos
+    // Função para imprimir os jogos
     public void imprimirGames() {
         SimpleDateFormat data = new SimpleDateFormat("dd/MM/yyyy");
         String dataFormatada = (releaseDate != null) ? data.format(releaseDate) : "N/A";
+
+        //Formantando preço para caso seja free to play considerar somente uma casa e ignorar o ultimo zero 
+        String precoFormatado;
+        if (price == 0.0) {
+            precoFormatado = "0.0"; 
+        } else {
+            double decimalParte = price * 10 % 10; 
+            if (price * 100 % 100 == 0 || price * 100 % 100 == 50) {
+                precoFormatado = String.format("%.1f", price);
+            } else {
+                precoFormatado = String.format("%.2f", price);
+            }
+        }
+
 
         System.out.print("=> " + appID
             + " ## " + name
             + " ## " + dataFormatada
             + " ## " + estimatedOwners
-            + " ## " + String.format("%.2f", price)
+            + " ## " + precoFormatado
             + " ## [");
 
         // Imprimindo lista de linguagens
