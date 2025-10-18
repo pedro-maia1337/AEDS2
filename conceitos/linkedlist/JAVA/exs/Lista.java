@@ -68,8 +68,8 @@ class Lista {
     public int remover(int x, int pos) {
         int tamanho = tamanho();
         int elemento = 0;
-        if(pos == 0) removerInicio(x);
-        if(pos == tamanho - 1) removerFim(x);
+        if(pos == 0) elemento = removerInicio();
+        if(pos == tamanho - 1) elemento = removerFim();
         if(primeiro == ultimo || pos < 0 || pos >= tamanho) {
             System.out.println("Erro ao inserir");
         } else {
@@ -97,8 +97,45 @@ class Lista {
 
     public int tamanho() {
         int len = 0;
-        for(Celula i = primeiro; i != ultimo; i = i.prox, tamanho++);
+        for(Celula i = primeiro; i != ultimo; i = i.prox, len++);
         return len;
+    }
+
+    public int removerSegundaPosicaoValida(){
+        int elemento = 0;
+        if(primeiro == ultimo) {
+            System.out.println("Erro: Lista vazia");
+        } else {
+            Celula i = primeiro.prox;
+            Celula tmp = i.prox;
+            elemento = tmp.elemento;
+            i.prox = tmp.prox;
+            tmp.prox = null;
+            i = tmp = null;
+        }
+        return elemento;
+    }
+
+    //Retorna soma dos elementos
+    public int soma() {
+        int soma = 0;
+        for(Celula i = primeiro; i != null; soma += i.elemento, i = i.prox);
+        return soma;
+    }
+
+    //Retorna o maior elemento
+    public int maiorElemento() {
+        int maiorElemento = primeiro.elemento;
+        for(Celula i = primeiro; i != null; i = i.prox) {
+            if(i.elemento > maiorElemento) {
+                maiorElemento = i.elemento;
+            }
+        }
+        return maiorElemento;
+    }
+
+    public void inverte() {
+        
     }
 }
 
