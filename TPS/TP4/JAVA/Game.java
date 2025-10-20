@@ -1,4 +1,5 @@
 import java.util.*;
+import java.io.*;
 import java.io.File;
 import java.text.SimpleDateFormat;
 
@@ -231,6 +232,145 @@ class Game {
         return count;
     }
 
+    //Função de swap para ordernar games 
+    public static void swap(Game[] tabela, int i, int j) {
+		Game temp = tabela[i];
+		tabela[i] = tabela[j];
+		tabela[j] = temp;
+	}
+
+    //Função para comparar game com menor appID, (mudar para demais chaves)
+    public static int comparar(Game a, Game b) {
+        if (a.estimatedOwners != b.estimatedOwners) {
+            return a.estimatedOwners - b.estimatedOwners; // menor vem antes
+        } else {
+            return a.appID - b.appID; // menor appID vem antes
+        }
+    }
+
+    public static double compararPrice(Game a, Game b) {
+        if (a.price != b.price) {
+            return a.price - b.price; // menor vem antes
+        } else {
+            return a.appID - b.appID; // menor appID vem antes
+        }
+    }
+
+    //Ordenação com heap sort 
+    //@chave primária = estimatedOwners
+    public static void ordernarHeap(Game[] tabela, int totalIds) {
+        //Alterar o vetor ignorando a posicao zero
+        Game[] tmp = new Game[totalIds + 1];
+        for(int i = 0; i < totalIds; i++){
+            tmp[i+1] = tabela[i];
+        }
+        tabela = tmp;
+
+        //Contrucao do heap
+        for(int tamHeap = 2; tamHeap <= totalIds; tamHeap++){
+            construir(tabela, tamHeap);
+        }
+
+        //Ordenacao propriamente dita
+        int tamHeap = totalIds;
+        while(tamHeap > 1){
+            swap(tabela, 1, tamHeap--);
+            reconstruir(tabela, tamHeap);
+        }
+
+        //Alterar o vetor para voltar a posicao zero
+        tmp = tabela;
+        tabela = new Game[totalIds];
+        for(int i = 0; i < totalIds; i++){
+            tabela[i] = tmp[i+1];
+        }
+    }
+
+
+    public static void construir(Game[] tabela, int tamHeap) {
+        for (int i = tamHeap; i > 1 && comparar(tabela[i], tabela[i / 2]) < 0; i /= 2) {
+            swap(tabela, i, i / 2);
+        }
+}
+
+   public static void reconstruir(Game[] tabela, int tamHeap){
+        int i = 1;
+        while (i <= tamHeap / 2) {
+            int filho = getMenorFilho(tabela, i, tamHeap);
+            if (comparar(tabela[i], tabela[filho]) > 0) {
+                swap(tabela, i, filho);
+                i = filho;
+            } else {
+                i = tamHeap;
+            }
+        }
+    }
+
+    public static int getMenorFilho(Game[] tabela, int i, int tamHeap){
+        int filho;
+        if (2 * i == tamHeap) {
+            filho = 2 * i;
+        } else if (comparar(tabela[2 * i], tabela[2 * i + 1]) < 0) {
+            filho = 2 * i;
+        } else {
+            filho = 2 * i + 1;
+        }
+        return filho;
+    }
+    //End Ordenação Heap
+
+
+    //Ordenação MERGE
+    public static void sort(Game[] tabela, int totalIds) {
+        mergesort(tabela, 0, totalIds-1);
+    }
+
+    private static void mergesort(Game[] tabela, int esq, int dir) {
+        if (esq < dir){
+            int meio = (esq + dir) / 2;
+            mergesort(tabela, esq, meio);
+            mergesort(tabela, meio + 1, dir);
+            intercalar(tabela, esq, meio, dir);
+        }
+   }
+
+    public static void intercalar(Game[] tabela, int esq, int meio, int dir){
+        int n1, n2, i, j, k;
+
+        //Definir tamanho dos dois subarrays
+        n1 = meio-esq+1;
+        n2 = dir - meio;
+
+        Game[] a1 = new Game[n1+1];
+        Game[] a2 = new Game[n2+1];
+
+        //Inicializar primeiro subarray
+        for(i = 0; i < n1; i++){
+            a1[i] = tabela[esq+i];
+        }
+
+        //Inicializar segundo subarray
+        for(j = 0; j < n2; j++){
+            a2[j] = tabela[meio+j+1];
+        }
+
+        a1[n1] = new Game(Integer.MAX_VALUE, "", null, Integer.MAX_VALUE, 0.0,
+                      new String[0], 0, 0, 0, "", "", new String[0], new String[0], new String[0]);
+        a2[n2] = new Game(Integer.MAX_VALUE, "", null, Integer.MAX_VALUE, 0.0,
+                      new String[0], 0, 0, 0, "", "", new String[0], new String[0], new String[0]);
+
+        i = 0; j = 0;
+
+        // Intercalando
+        for (k = esq; k <= dir; k++) {
+            if (comparar(a1[i], a2[j]) <= 0) {
+                tabela[k] = a1[i++];
+            } else {
+                tabela[k] = a2[j++];
+            }
+        }
+    }
+
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
 
@@ -251,12 +391,22 @@ class Game {
         Game[] tabela = new Game[totalIds];
         int count = inicializarGames(tabela, idsDesejados, totalIds);
 
+        sort(tabela, count);
+
         // Imprime os jogos
         for (int i = 0; i < count; i++) {
             tabela[i].imprimirGames();
         }
 
         sc.close();
+    }
+
+    public static void escreverLog(String nomeArquivo, int comparacoes, int tempo) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nomeArquivo))) {
+            writer.write("8743985\t" + comparacoes + "\t" + tempo + "\n");
+        } catch (IOException e) {
+            System.err.println("Erro ao escrever no log: " + e.getMessage());
+        }
     }
 
 }
