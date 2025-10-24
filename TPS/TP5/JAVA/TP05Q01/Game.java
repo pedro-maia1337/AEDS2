@@ -117,7 +117,7 @@ class Game {
             + " ## [");
 
         // Imprimindo lista de linguagens
-        for (int i = 0; i < supportedLanguages.length; i++) {
+        for (int i = 0; i < supportedLanguages.length; i = i + 1) {
             System.out.print(supportedLanguages[i]);
             if (i < supportedLanguages.length - 1) System.out.print(", ");
         }
@@ -138,7 +138,7 @@ class Game {
         System.out.print("] ## [");
 
         // Imrpimindo categorias
-        for (int i = 0; i < categories.length; i++) {
+        for (int i = 0; i < categories.length; i= i + 1) {
             System.out.print(categories[i]);
             if (i < categories.length - 1) System.out.print(", ");
         }
@@ -146,7 +146,7 @@ class Game {
         System.out.print("] ## [");
 
         // Imprimindo gêneros
-        for (int i = 0; i < genres.length; i++) {
+        for (int i = 0; i < genres.length; i = i + 1) {
             System.out.print(genres[i]);
             if (i < genres.length - 1) System.out.print(", ");
         }
@@ -154,7 +154,7 @@ class Game {
         System.out.print("] ## [");
 
         //Imprimindo tags
-        for (int i = 0; i < tags.length; i++) {
+        for (int i = 0; i < tags.length; i = i + 1) {
             System.out.print(tags[i]);
             if (i < tags.length - 1) System.out.print(", ");
         }
@@ -171,7 +171,7 @@ class Game {
         try {
             csv = new Scanner(new File("/tmp/games.csv"));
         } catch (Exception e) {
-            csv = new Scanner(new File("../games.csv"));
+            csv = new Scanner(new File("../../games.csv"));
         }
 
         SimpleDateFormat data = new SimpleDateFormat("MMM dd, yyyy", Locale.US);
@@ -189,7 +189,7 @@ class Game {
 
                 // Valida se o appID está em ids
                 int pos = -1;
-                for (int i = 0; i < totalIds; i++) {
+                for (int i = 0; i < totalIds; i = i + 1) {
                     if (idsDesejados[i] == appID) {
                         pos = i;
                     }
@@ -222,7 +222,7 @@ class Game {
         }
 
         // copia apenas os jogos encontrados para a tabela final
-        for (int i = 0; i < totalIds; i++) {
+        for (int i = 0; i < totalIds; i = i + 1) {
             if (encontrados[i] != null) {
                 tabela[count++] = encontrados[i];
             }
@@ -243,10 +243,10 @@ class Game {
     //Usando compareTo para comparar alfabeticamente
     public static void sort(Game[] tabela, int totalIds) {
         int len = totalIds;
-    
-        for (int i = 0; i < len - 1; i++) {
+
+        for (int i = 0; i < len - 1; i = i + 1) {
             int menor = i;
-            for (int j = i + 1; j < len; j++) {
+            for (int j = i + 1; j < len; j = j + 1) {
                 if (tabela[j].name.compareTo(tabela[menor].name) < 0) {
                     menor = j;
                 }
@@ -258,17 +258,17 @@ class Game {
 
     //Pesquisa binária 
     //utiliza compareTo para comparar as strings
-    public static void pesquisaBin(Game[] tabela, List<String> pesquisa) {
+    public static void pesquisaBin(Game[] tabela, List<String> pesquisa, int n) {
         for(int j = 0; j < pesquisa.size(); j = j + 1) {
             boolean resp = false;
 
-            int esq = 0; int dir = tabela.length - 1;
+            int esq = 0; int dir = n - 1;
 
             while (esq <= dir) {
                 int meio = (esq + dir) / 2;
                 if(pesquisa.get(j).compareTo(tabela[meio].getName()) == 0){
                     resp = true;
-                    break;
+                    esq = dir + 1;
                 } else if(pesquisa.get(j).compareTo(tabela[meio].getName()) < 0){
                     dir = meio - 1;
                 } else {
@@ -291,13 +291,15 @@ class Game {
         int[] idsDesejados = new int[maxIds];
         int totalIds = 0;
 
-        // Leitura dos IDs do pub.in até encotrar FIM
-        while (sc.hasNextLine() && totalIds < maxIds) {
-            String linha = sc.nextLine().trim();
-            if (linha.equals("FIM")) break;
-            if (!linha.isEmpty()) {
-                idsDesejados[totalIds++] = Integer.parseInt(linha);
-            }
+        boolean flag = false;
+
+        // Leitura dos IDs até encotrar FIM
+        while (sc.hasNextLine() && totalIds < maxIds && !flag) {
+            String linha = sc.nextLine();
+            if (linha.equals("FIM")) 
+                flag = true;
+            else if (!linha.isEmpty()) 
+                idsDesejados[totalIds++] = Integer.parseInt(linha);   
         }
 
         //Usando ArrayList pois com arranjo iria ter que ler o arquivo duas vezes para determinar o tamanho
@@ -306,7 +308,7 @@ class Game {
 
         //Leitura dos jogos do pub.in a serem procurados 
         while (sc.hasNextLine()) {
-            String linha = sc.nextLine().trim();
+            String linha = sc.nextLine();
             if (!linha.isEmpty() && !(linha.charAt(0) >= '0' && linha.charAt(0) <= '9') && !(linha.equals("FIM"))) {
                 pesquisa.add(linha);
             }
@@ -316,8 +318,20 @@ class Game {
         Game[] tabela = new Game[totalIds];
         int count = inicializarGames(tabela, idsDesejados, totalIds);
 
-        sort(tabela, totalIds);
-        pesquisaBin(tabela, pesquisa);
+        // Removendo elementos nulos - estava constando erro no verde
+        Game[] tabelaSemNulos = new Game[count];
+        for (int i = 0; i < count; i = i + 1) {
+            if (tabela[i] != null) {
+                tabelaSemNulos[i] = tabela[i];
+            }
+        }
+
+        //Ordenação necessária para o algoritmo de busca binária
+        sort(tabelaSemNulos, tabelaSemNulos.length);
+
+        //Busca binária
+        pesquisaBin(tabelaSemNulos, pesquisa, tabelaSemNulos.length);
+
 
         sc.close();
     }
