@@ -23,7 +23,6 @@ typedef struct {
     char tags[2000];
 } Game;
 
-
 void criarData(char *origem, char *destino) {
     char mesStr[10];
     int dia, ano, mes = 0;
@@ -202,22 +201,43 @@ void swap(Game tabela[], int i, int j) {
     tabela[j] = temp;
 }
 
-//Utilizando código do seleção visto nas aulas 
-// utilizando strcmp para compração de string 
-int selecao(Game *array, int n){
-    int cmp = 0;
-    for (int i = 0; i < (n - 1); i = i + 1) {
-        int menor = i;
-        for (int j = (i + 1); j < n; j = j + 1){
-            cmp++;
-            if (strcmp(array[menor].name, array[j].name) > 0){
-                menor = j;
-            }
-        }
-        swap(array, menor, i);
+//Convertendo data para número para comparação do quick
+int converterDataParaInt(char *dataStr) {
+    int dia, mes, ano;
+    if (sscanf(dataStr, "%d/%d/%d", &dia, &mes, &ano) == 3) {
+        return ano * 10000 + mes * 100 + dia;
     }
+    return 0;
+}
 
-    return cmp;
+//Função de comparação de datas mesmo lógica da função de comparações em JAVA
+int compararDatas(char *data1, char *data2) {
+    int num1 = converterDataParaInt(data1);
+    int num2 = converterDataParaInt(data2);
+    return num1 - num2;
+}
+
+//Utilizando código do quick visto nas aulas 
+//utilizando strcmp para compração de string 
+void quicksortRec(Game tabela[], int esq, int dir) {
+    int i = esq, j = dir;
+    char *pivo = tabela[(dir+esq)/2].releaseDate;
+    while (i <= j) {
+        while (compararDatas(tabela[i].releaseDate, pivo) < 0) i++;
+        while (compararDatas(tabela[j].releaseDate, pivo) > 0) j--;
+        if (i <= j) {
+            swap(tabela, i, j);
+            i++;
+            j--;
+        }
+    }
+    if (esq < j)  quicksortRec(tabela, esq, j);
+    if (i < dir)  quicksortRec(tabela, i, dir);
+}
+
+//Chamada da função recursiva - insight do MAX de boa prática 
+void quicksort(Game tabela[], int n) {
+    quicksortRec(tabela, 0, n-1);
 }
 
 //Escrever LOG
@@ -236,13 +256,9 @@ int main() {
     int totalIds = 0;
     char entrada[32];
 
-    //esse tipo de dado vem da biblioteca time.h
-    //na doc diz que retorna um long int
     clock_t inicio;
     clock_t fim;
-
     double total = 0.0;
-    int cmp = 0;
 
     //Lendo até encontrar FIM 
     while (scanf("%s", entrada) == 1) {
@@ -255,7 +271,7 @@ int main() {
 
     //Ordenação
     inicio = clock();
-    cmp = selecao(tabela, count);
+    quicksort(tabela, count);
     fim = clock();
     total = ((fim - inicio) / (double)CLOCKS_PER_SEC);
 
@@ -263,7 +279,7 @@ int main() {
         imprimirGames(tabela[i]);
     }
 
-    escreverLog("log", cmp, total);
+    escreverLog("log", 0, total);
 
     return 0;
 }

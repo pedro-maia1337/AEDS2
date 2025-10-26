@@ -262,7 +262,8 @@ class Game {
 
     //Ordenação dos elementos utilizando heapsort e utilizando estimatedOwners como chave primária
     //utilizando o código heapsort visto nas aulas 
-    public static void sort(Game[] tabela) {
+    public static void sort(Game[] tabela, int [] cmp) {
+        cmp[0] = 0;
         int n = tabela.length;
         //Alterar o vetor ignorando a posicao zero
         Game[] tmp = new Game[n+1];
@@ -272,7 +273,7 @@ class Game {
         
         // Contrucao do heap
         for(int tamHeap = 2; tamHeap <= n; tamHeap++){
-            construir(tmp, tamHeap);
+            construir(tmp, tamHeap, cmp);
         }
 
         // Ordenacao propriamente dita
@@ -280,7 +281,7 @@ class Game {
         while(tamHeap > 1){
             swap(tmp, 1, tamHeap);
             tamHeap--;
-            reconstruir(tmp, tamHeap);
+            reconstruir(tmp, tamHeap, cmp);
         }
 
         // Alterar o vetor para voltar a posicao zero
@@ -289,16 +290,19 @@ class Game {
         }
     }
 
-    public static void construir(Game[] tabela, int tamHeap){
+    public static void construir(Game[] tabela, int tamHeap, int [] cmp){
         for(int i = tamHeap; i > 1 && desempate(tabela[i], tabela[i/2]) > 0; i /=2) {
+            cmp[0]++; // comparação for
             swap(tabela, i, i/2);
         }
     }
 
-    public static void reconstruir(Game[] tabela, int tamHeap){
+    public static void reconstruir(Game[] tabela, int tamHeap, int [] cmp){
         int i = 1;
         while(i <= (tamHeap/2)) {
-            int filho = getMaiorFilho(tabela, i, tamHeap);
+            cmp[0]++; // comparação while
+            int filho = getMaiorFilho(tabela, i, tamHeap, cmp);
+            cmp[0]++; // comparação if
             if(desempate(tabela[i], tabela[filho]) < 0) {
                 swap(tabela, i, filho);
                 i = filho;
@@ -308,8 +312,10 @@ class Game {
         }
     }
 
-    public static int getMaiorFilho(Game[] tabela, int i, int tamHeap){
+   
+    public static int getMaiorFilho(Game[] tabela, int i, int tamHeap, int [] cmp){
         int filho;
+        cmp[0]++;
         if (2*i + 1 > tamHeap) {
             filho = 2*i;
         } else {
@@ -323,12 +329,20 @@ class Game {
         return filho;
     }
 
+    public static long now(){
+		return new Date().getTime();
+	}
+
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
 
         int maxIds = 255; // tamanho máximo de IDs (mudar isso depois para crescer de forma dinamica)
         int[] idsDesejados = new int[maxIds];
         int totalIds = 0;
+
+        double inicio = 0;
+        double fim = 0;
+        int[] cmp = new int[1]; //fazendo por ref por com int iria ter que mudar os metodos do heap 
 
         boolean flag = false;
 
@@ -355,22 +369,24 @@ class Game {
         }
 
         //Ordena
-        sort(tabelaSemNulos);
+        inicio = now();
+        sort(tabelaSemNulos, cmp);
+        fim = now();
 
         for(int i = 0; i < count; i = i + 1) {
             tabelaSemNulos[i].imprimirGames();
         }
 
-        escreverLog("teste", totalIds, count);
+        escreverLog("log", cmp[0], (fim-inicio)/1000.0);
 
         sc.close();
     }
 
-    public static void escreverLog(String nomeArquivo, int comparacoes, int tempo) {
+    public static void escreverLog(String nomeArquivo, int comparacoes, double tempo) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(nomeArquivo))) {
-            writer.write("8743985\t" + comparacoes + "\t" + tempo + "\n");
+            writer.write("874398\t" + tempo + "\t" + comparacoes + "\n");
         } catch (IOException e) {
-            System.err.println("Erro ao escrever log: " + e.getMessage());
+            System.err.println("Erro ao escrever no log: " + e.getMessage());
         }
     }
 

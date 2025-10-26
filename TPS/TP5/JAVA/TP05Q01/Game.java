@@ -258,7 +258,8 @@ class Game {
 
     //Pesquisa binária 
     //utiliza compareTo para comparar as strings
-    public static void pesquisaBin(Game[] tabela, List<String> pesquisa, int n) {
+    public static int pesquisaBin(Game[] tabela, List<String> pesquisa, int n) {
+        int cmp = 0;
         for(int j = 0; j < pesquisa.size(); j = j + 1) {
             boolean resp = false;
 
@@ -267,13 +268,17 @@ class Game {
             while (esq <= dir) {
                 int meio = (esq + dir) / 2;
                 if(pesquisa.get(j).compareTo(tabela[meio].getName()) == 0){
+                    cmp++;
                     resp = true;
                     esq = dir + 1;
                 } else if(pesquisa.get(j).compareTo(tabela[meio].getName()) < 0){
+                    cmp++;
                     dir = meio - 1;
                 } else {
+                    cmp++;
                     esq = meio + 1;
                 }
+                cmp++;
             }
 
             if(resp == true) {
@@ -282,7 +287,13 @@ class Game {
                 System.out.println(" NAO");
             }
         }
+
+        return cmp;
     }
+
+    public static long now(){
+		return new Date().getTime();
+	}
 
     public static void main(String[] args) throws Exception {
         Scanner sc = new Scanner(System.in);
@@ -290,6 +301,10 @@ class Game {
         int maxIds = 255; // tamanho máximo de IDs (mudar isso depois para crescer de forma dinamica)
         int[] idsDesejados = new int[maxIds];
         int totalIds = 0;
+
+        double inicio = 0;
+        double fim = 0;
+        int cmp = 0;
 
         boolean flag = false;
 
@@ -327,18 +342,20 @@ class Game {
         }
 
         //Ordenação necessária para o algoritmo de busca binária
+        inicio = now();
         sort(tabelaSemNulos, tabelaSemNulos.length);
+        fim = now();
 
         //Busca binária
-        pesquisaBin(tabelaSemNulos, pesquisa, tabelaSemNulos.length);
+        cmp = pesquisaBin(tabelaSemNulos, pesquisa, tabelaSemNulos.length);
 
-
+        escreverLog("log", cmp ,(fim-inicio)/1000.0);
         sc.close();
     }
 
-    public static void escreverLog(String nomeArquivo, int comparacoes, int tempo) {
+    public static void escreverLog(String nomeArquivo, int comparacoes, double tempo) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(nomeArquivo))) {
-            writer.write("8743985\t" + comparacoes + "\t" + tempo + "\n");
+            writer.write("874398\t" + tempo + "\t" + comparacoes + "\n");
         } catch (IOException e) {
             System.err.println("Erro ao escrever no log: " + e.getMessage());
         }

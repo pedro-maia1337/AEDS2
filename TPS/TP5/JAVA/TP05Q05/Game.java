@@ -250,9 +250,9 @@ class Game {
         return a.appID > b.appID; 
     }
 
-    public static void sort(Game[] tabela) {
+    public static void sort(Game[] tabela, int[] cmp) {
         int n = tabela.length;
-        mergesort(tabela, 0, n-1);
+        mergesort(tabela, 0, n-1, cmp);
     }
 
    /**
@@ -260,12 +260,13 @@ class Game {
     * @param int esq inicio do array a ser ordenado
     * @param int dir fim do array a ser ordenado
     */
-    private static void mergesort(Game[] tabela, int esq, int dir) {
+    private static void mergesort(Game[] tabela, int esq, int dir, int[] cmp) {
         if (esq < dir){
+            cmp[0]++;
             int meio = (esq + dir) / 2;
-            mergesort(tabela, esq, meio);
-            mergesort(tabela, meio + 1, dir);
-            intercalar(tabela, esq, meio, dir);
+            mergesort(tabela, esq, meio, cmp);
+            mergesort(tabela, meio + 1, dir, cmp);
+            intercalar(tabela, esq, meio, dir, cmp);
         }
     }
 
@@ -275,7 +276,7 @@ class Game {
     * @param int meio posicao do meio do array a ser ordenado
     * @param int dir fim do array a ser ordenado
     */ 
-   public static void intercalar(Game[] tabela, int esq, int meio, int dir){
+   public static void intercalar(Game[] tabela, int esq, int meio, int dir, int[] cmp){
         int n1, n2, i, j, k;
 
         //Definir tamanho dos dois subarrays
@@ -302,6 +303,7 @@ class Game {
 
       //Intercalacao propriamente dita
         for(i = j = 0, k = esq; k <= dir; k = k + 1){
+            cmp[0]++;
             if(a2[j] == null || (a1[i] != null && desempate(a1[i], a2[j]))) {
                 tabela[k] = a1[i++];
             } else {
@@ -309,6 +311,10 @@ class Game {
             }
         } 
     }
+
+    public static long now(){
+		return new Date().getTime();
+	}
 
 
     public static void main(String[] args) throws Exception {
@@ -319,6 +325,10 @@ class Game {
         int totalIds = 0;
 
         boolean flag = false;
+
+        double inicio = 0;
+        double fim = 0;
+        int[] cmp = new int[1]; //fazendo por ref por com int iria ter que mudar os metodos do merge
 
 
         // Leitura dos IDs até encotrar FIM
@@ -335,7 +345,9 @@ class Game {
         int count = inicializarGames(tabela, idsDesejados, totalIds);
 
         //Ordena
-        sort(tabela);
+        inicio = now();
+        sort(tabela, cmp);
+        fim = now();
 
         //Corrigindo problema de encode do verde :)
         String texto1 = "| 5 preços mais caros |";
@@ -357,14 +369,14 @@ class Game {
             tabela[i].imprimirGames();
         }
 
-        escreverLog("teste", totalIds, count);
+        escreverLog("log", cmp[0], (fim-inicio)/1000.0);
 
         sc.close();
     }
 
-    public static void escreverLog(String nomeArquivo, int comparacoes, int tempo) {
+    public static void escreverLog(String nomeArquivo, int comparacoes, double tempo) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(nomeArquivo))) {
-            writer.write("8743985\t" + comparacoes + "\t" + tempo + "\n");
+            writer.write("875498\t" + comparacoes + "\t" + tempo + "\n");
         } catch (IOException e) {
             System.err.println("Erro ao escrever log: " + e.getMessage());
         }
