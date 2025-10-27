@@ -71,16 +71,17 @@ class Arvore {
     }
 
     public void caminharCentral() {
-        System.out.println("[");
+        System.out.print("[");
         caminharCentral(raiz);
-        System.out.println("]");
+        System.out.print("]");
+        System.out.println();
         
     }
 
     private void caminharCentral(No i) {
         if(i != null) {
             caminharCentral(i.esq);
-            System.out.println(i.elemento + " ");
+            System.out.print(i.elemento + " ");
             caminharCentral(i.dir);
         } 
     }
@@ -96,8 +97,7 @@ class Arvore {
             System.out.println(i.elemento + " ");
             caminharPre(i.esq);
             caminharPre(i.dir);
-        }
-        
+        }   
     }
 
     public void caminharPos(){
@@ -117,5 +117,31 @@ class Arvore {
 
     void remover(int x) {
 
+    } 
+
+    public int getSoma() {
+        return getSoma(raiz);
+    }
+
+    private int getSoma(No i) {
+        int soma = 0;
+        if(i != null) {
+            soma += i.elemento + getSoma(i.dir) + getSoma(i.esq);
+        }
+        return soma;
+    }
+
+    public int getPares() {
+        return getPares(raiz);
+    }
+
+    private int getPares(No i) {
+        int count = 0;
+        if(i != null) {
+            if(i.elemento % 2 == 0) count ++;
+            count += getPares(i.esq) + getPares(i.dir);   
+        }
+
+        return count;
     }
 }
