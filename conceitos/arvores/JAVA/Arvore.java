@@ -1,5 +1,5 @@
 class Arvore {
-    private No raiz;
+    public No raiz;
     
     public Arvore() {
         raiz = null;
@@ -143,5 +143,17 @@ class Arvore {
         }
 
         return count;
+    }
+
+    public boolean div11() {
+        return div11(raiz);
+    }
+
+    private boolean div11(No i) {
+        boolean resp = false;
+        if(i != null) {
+            resp = (i.elemento % 11 == 0) || div11(i.esq) || div11(i.dir);
+        } 
+        return resp;
     }
 }
