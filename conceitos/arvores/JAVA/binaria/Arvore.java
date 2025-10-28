@@ -156,4 +156,36 @@ class Arvore {
         } 
         return resp;
     }
+
+    public int getAltura() {
+        return getAltura(raiz);
+    }
+
+    private int getAltura(No i) {
+        int altura = 0;
+        if(i != null) {
+            int esq  = getAltura(i.esq);
+            int dir = getAltura(i.dir);
+            altura = 1 + (esq > dir ? esq : dir);
+        }
+
+        return altura;
+    }
+
+    public int[] sort() {
+        return sort(raiz);
+    }
+
+    private int[] sort(No i) {
+        int n = 0;
+        int[] arr = new int[n];
+        
+        if(i != null) {
+            sort(i.esq);
+            arr[n++] = i.elemento;
+            sort(i.dir);
+        }
+        
+        return arr;
+    }
 }
