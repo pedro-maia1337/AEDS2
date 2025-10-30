@@ -1,16 +1,11 @@
 class No {
-    public int elemento;
+    public char letra;
     public No esq, dir;
+    public Celula primeiro, ultimo;
 
-    No(int elemento) {
-        this.elemento = elemento;
-        this.esq = null;
-        this.dir = null;
-    }
-
-    No(int elemento, No esq, No dir) {
-        this.elemento = elemento;
-        this.esq = esq;
-        this.dir = dir;
+    No(char letra) {
+        this.letra = letra;
+        this.esq = this.dir = null;
+        primeiro = ultimo = new Celula();
     }
 }
