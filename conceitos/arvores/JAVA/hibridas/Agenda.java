@@ -1,15 +1,15 @@
-class Arvore {
+class Agenda {
     public No raiz;
     
     public Arvore() {
         raiz = null;
     }
 
-    public void inserir(int x) {
-        raiz = inserir(x, raiz);
+    public void inserir(char letra) {
+        raiz = inserir(raiz);
     }
 
-    private No inserir(int x, No i) {
+    private No inserir(No i) {
         if(i == null) {
             i = new No(x);
         } else if(x < i.elemento){
@@ -119,44 +119,6 @@ class Arvore {
 
     } 
 
-    public int getSoma() {
-        return getSoma(raiz);
-    }
-
-    private int getSoma(No i) {
-        int soma = 0;
-        if(i != null) {
-            soma += i.elemento + getSoma(i.dir) + getSoma(i.esq);
-        }
-        return soma;
-    }
-
-    public int getPares() {
-        return getPares(raiz);
-    }
-
-    private int getPares(No i) {
-        int count = 0;
-        if(i != null) {
-            if(i.elemento % 2 == 0) count ++;
-            count += getPares(i.esq) + getPares(i.dir);   
-        }
-
-        return count;
-    }
-
-    public boolean div11() {
-        return div11(raiz);
-    }
-
-    private boolean div11(No i) {
-        boolean resp = false;
-        if(i != null) {
-            resp = (i.elemento % 11 == 0) || div11(i.esq) || div11(i.dir);
-        } 
-        return resp;
-    }
-
     public int getAltura() {
         return getAltura(raiz);
     }
@@ -170,22 +132,5 @@ class Arvore {
         }
 
         return altura;
-    }
-
-    public int[] sort() {
-        return sort(raiz);
-    }
-
-    private int[] sort(No i) {
-        int n = 0;
-        int[] arr = new int[n];
-        
-        if(i != null) {
-            sort(i.esq);
-            arr[n++] = i.elemento;
-            sort(i.dir);
-        }
-        
-        return arr;
     }
 }
