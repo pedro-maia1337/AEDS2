@@ -12,7 +12,8 @@ class Principal {
 
       //Geracao do conjunto a ser ordenado
 		//algoritmo.aleatorio();
-		algoritmo.crescente();
+		//algoritmo.crescente();
+		algoritmo.parcial();
 		//algoritmo.decrescente();
 
 
@@ -22,7 +23,7 @@ class Principal {
 
       //Execucao do algoritmo de ordenacao
 		inicio = algoritmo.now();
-		algoritmo.sort(1);
+		algoritmo.sort(4);
 		fim = algoritmo.now();
 
 
