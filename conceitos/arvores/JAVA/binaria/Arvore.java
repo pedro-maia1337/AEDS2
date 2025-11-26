@@ -188,4 +188,18 @@ class Arvore {
         
         return arr;
     }
+
+    void rotacionarEsq() {
+        raiz = rotacionarEsq(raiz);
+    }
+
+    No rotacionarEsq(No raiz) {
+        No noDir = raiz.dir;
+        No noDirEsq = noDir.esq;
+
+        noDir.esq = raiz;
+        raiz.dir = noDirEsq;
+
+        return noDir;
+    }
 }

@@ -158,7 +158,7 @@ void imprimirGame(Game jogo) {
     );
 }
 
-// Carregar todos os games do CSV uma única vez
+// Carregar todos os games do CSV 
 int carregarTodosGames() {
     FILE *csv = fopen("/tmp/games.csv", "r");
     if (csv == NULL) csv = fopen("../games.csv", "r");
@@ -205,8 +205,6 @@ int carregarTodosGames() {
         todosGames[count].tags[1999] = '\0';
 
         count++;
-
-        printf("Carregados %d jogos. Exemplo: %s\n", count, todosGames[0].name);
     }
 
     fclose(csv);
@@ -238,7 +236,7 @@ void start() {
     ultimo = primeiro;
 }
 
-// Inserir no inicio
+// Inserir no início
 void inserirInicio(Game game) {
     ListaGames* tmp = criarCelula(game);
     tmp->prox = primeiro->prox;
@@ -253,31 +251,6 @@ void inserirInicio(Game game) {
 void inserirFim(Game game) {
     ultimo->prox = criarCelula(game);
     ultimo = ultimo->prox;
-}
-
-// Inserir em posição específica
-void inserirPos(Game game, int pos) {
-    int tamanho = 0;
-    ListaGames* i;
-    for (i = primeiro->prox; i != NULL; i = i->prox) tamanho++;
-    
-    if (pos < 0 || pos > tamanho) {
-        printf("Erro ao inserir. Posicao invalida!\n");
-        return;
-    } else if (pos == 0) {
-        inserirInicio(game);
-    } else if (pos == tamanho) {
-        inserirFim(game);
-    } else {
-        ListaGames* anterior = primeiro;
-        for (int j = 0; j < pos; j++) {
-            anterior = anterior->prox;
-        }
-        
-        ListaGames* tmp = criarCelula(game);
-        tmp->prox = anterior->prox;
-        anterior->prox = tmp;
-    }
 }
 
 // Remover do início
@@ -301,78 +274,12 @@ Game removerInicio() {
     return removido;
 }
 
-// Remover do fim
-Game removerFim() {
-    Game removido = {0};
-    
-    if (primeiro == ultimo) {
-        printf("Erro ao remover. Lista vazia!\n");
-        return removido;
-    }
-
-    ListaGames* i;
-    for (i = primeiro; i->prox != ultimo; i = i->prox);
-    
-    removido = ultimo->game;
-    ListaGames* tmp = ultimo;
-    ultimo = i;
-    ultimo->prox = NULL;
-    free(tmp);
-    
-    return removido;
-}
-
-// Remover de qualquer posição
-Game removerPos(int pos) {
-    Game removido = {0};
-    int tamanho = 0;
-    ListaGames* i;
-    
-    if (primeiro == ultimo) {
-        printf("Erro ao remover. Lista vazia!\n");
-        return removido;
-    }
-    
-    for (i = primeiro->prox; i != NULL; i = i->prox) {
-        tamanho++;
-    }
-    
-    if (pos < 0 || pos >= tamanho) {
-        printf("Erro ao remover. Posicao invalida!\n");
-        return removido;
-    } else if (pos == 0) {
-        removido = removerInicio();
-    } else if (pos == tamanho - 1) {
-        removido = removerFim();
-    } else {
-        ListaGames* anterior = primeiro;
-        for (int j = 0; j < pos; j++) {
-            anterior = anterior->prox;
-        }
-        
-        ListaGames* tmp = anterior->prox;
-        removido = tmp->game;
-        anterior->prox = tmp->prox;
-        free(tmp);
-    }
-    
-    return removido;
-}
-
 void mostrar() {
     int indice = 0;
     for (ListaGames* i = primeiro->prox; i != NULL; i = i->prox, indice++) {
         printf("[%d] ", indice);
         imprimirGame(i->game);
     }
-}
-
-// Liberar memória
-void liberarLista() {
-    while (primeiro != ultimo) {
-        removerInicio();
-    }
-    free(primeiro);
 }
 
 int main() {
@@ -386,9 +293,7 @@ int main() {
     // Inicializar lista
     start();
 
-    // Leitura dos IDs até encontrar FIM
     while (fgets(linha, sizeof(linha), stdin) != NULL && totalIds < MAX_IDS && !flag) {
-        // Remover quebra de linha
         linha[strcspn(linha, "\n")] = 0;
         
         if (strcmp(linha, "FIM") == 0) {
@@ -397,8 +302,7 @@ int main() {
             idsDesejados[totalIds++] = atoi(linha);
         }
     }
-
-    // Inserir jogos iniciais
+    
     for (int i = 0; i < totalIds; i++) {
         Game* game = buscarGamePorID(idsDesejados[i]);
         if (game != NULL) {
@@ -422,52 +326,18 @@ int main() {
         linha[strcspn(linha, "\n")] = 0;
         
         char comando[10];
-        int param1 = 0, param2 = 0;
+        int param1 = 0;
         
-        // Parse da string lida
-        if (sscanf(linha, "%s %d %d", comando, &param1, &param2) >= 1) {
-            if (strcmp(comando, "II") == 0) {
-                // Inserir no início
+        if (sscanf(linha, "%s %d", comando, &param1) >= 1) {
+            if (strcmp(comando, "I") == 0) {
                 Game* game = buscarGamePorID(param1);
                 if (game != NULL) {
                     inserirInicio(*game);
-
                 }
             }
-            else if (strcmp(comando, "I*") == 0) {
-                // Inserir em qualquer posição
-                Game* game = buscarGamePorID(param2);
-                if (game != NULL) {
-                    inserirPos(*game, param1);
-
-                }
-            }
-            else if (strcmp(comando, "IF") == 0) {
-                // Inserir no fim
-                Game* game = buscarGamePorID(param1);
-                if (game != NULL) {
-                    inserirFim(*game);
-
-                }
-            }
-            else if (strcmp(comando, "RI") == 0) {
-                // Remover do início - EXIBIR NO FORMATO (R) Nome
+            else if (strcmp(comando, "R") == 0) {
                 Game removido = removerInicio();
-                if (strlen(removido.name) > 0) {
-                    printf("(R) %s\n", removido.name);
-                }
-            }
-            else if (strcmp(comando, "R*") == 0) {
-                // Remover de qualquer posição - EXIBIR NO FORMATO (R) Nome
-                Game removido = removerPos(param1);
-                if (strlen(removido.name) > 0) {
-                    printf("(R) %s\n", removido.name);
-                }
-            }
-            else if (strcmp(comando, "RF") == 0) {
-                // Remover do fim - EXIBIR NO FORMATO (R) Nome
-                Game removido = removerFim();
-                if (strlen(removido.name) > 0) {
+                if (removido.appID != 0) { 
                     printf("(R) %s\n", removido.name);
                 }
             }
@@ -477,11 +347,7 @@ int main() {
         }
     }
 
-    // Imprimir lista final
     mostrar();
-    
-    // Liberar memória
-    liberarLista();
     
     return 0;
 }

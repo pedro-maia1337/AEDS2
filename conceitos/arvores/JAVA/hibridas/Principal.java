@@ -1,12 +1,17 @@
-class Principal  {
+public class Principal {
     public static void main(String[] args) {
-        Random gerador = new Random();
-        Arvore arvoreBin = new Arvore();
-       
-        for(int i = 1; i < 30; i++) {
-            arvoreBin.inserir(i);
-        }
+        ArvoreArvore arvore = new ArvoreArvore();
+        int res = 0;
 
+        arvore.mostrar();
 
+        arvore.inserirPalavras();
+
+        System.out.println("\n=== PALAVRAS POR LETRA ESPECÍFICA ===");
+        arvore.mostrarPalavrasPorLetra('D');
+
+        res = arvore.contarPalavras("Dama");
+
+        System.out.println(res);
     }
 }

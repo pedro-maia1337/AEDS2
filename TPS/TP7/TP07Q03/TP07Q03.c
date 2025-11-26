@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 
 #define MAX_LARGE_STRING 2000
 #define MAX_IDS 255
 #define MAX_GAMES 10000
 
-// Games 
+// Estrutura Game
 typedef struct {
     int appID;
     char name[255];
@@ -25,18 +26,25 @@ typedef struct {
     char tags[2000];
 } Game;
 
-// Estrutura da lista
-typedef struct ListaGames {
-    struct ListaGames* prox;
+// nó da árvore AVL
+typedef struct No {
+    struct No* esq;
+    struct No* dir;
     Game game;
-} ListaGames;
+    int nivel;
+} No;
+
+// Arvore AVL
+typedef struct {
+    No* raiz;
+} AVL;
 
 // Variáveis globais
-ListaGames* primeiro;
-ListaGames* ultimo;
 Game todosGames[MAX_GAMES];
 int totalGamesCarregados = 0;
+int comparacoes = 0;
 
+// Funções auxiliares
 void criarData(char *origem, char *destino) {
     char mesStr[10];
     int dia, ano, mes = 0;
@@ -69,14 +77,14 @@ void limpar(char *str) {
     for (int i = 0; str[i] && j < MAX_LARGE_STRING - 1; i++) {
         char c = str[i];
         
-        // Remove caracteres 
+        // Remove caracteres indesejados
         if (c == '[' || c == ']' || c == '\'' || c == '"' || c == '\n' || c == '\r') {
             continue;
         }
         
         temp[j++] = c;
         
-        // adiciona espaço
+        // Adiciona espaço após vírgula quando necessário
         if (c == ',' && str[i+1] != ' ' && str[i+1] != '\0' && j < MAX_LARGE_STRING - 1) {
             temp[j++] = ' ';
         }
@@ -86,7 +94,6 @@ void limpar(char *str) {
     strcpy(str, temp);
 }
 
-// Fazer parse dos campos
 int separarCampos(char *linha, char campos[][2000], int maxCampos) {
     int i = 0, j = 0, k = 0;
     int dentroAspas = 0;
@@ -120,9 +127,8 @@ int separarCampos(char *linha, char campos[][2000], int maxCampos) {
     return k;
 }
 
-// Imprime os jogos NO FORMATO CORRETO
 void imprimirGame(Game jogo) {
-    // Formatação do preço conforme especificado
+    // Formatação do preço 
     char precoFormatado[20];
     if (jogo.price == 0.0) {
         strcpy(precoFormatado, "0.0");
@@ -168,7 +174,7 @@ int carregarTodosGames() {
     }
 
     char linha[8192];
-    fgets(linha, sizeof(linha), csv); // Pular cabeçalho
+    fgets(linha, sizeof(linha), csv); 
 
     int count = 0;
 
@@ -205,8 +211,6 @@ int carregarTodosGames() {
         todosGames[count].tags[1999] = '\0';
 
         count++;
-
-        printf("Carregados %d jogos. Exemplo: %s\n", count, todosGames[0].name);
     }
 
     fclose(csv);
@@ -224,155 +228,171 @@ Game* buscarGamePorID(int appID) {
     return NULL;
 }
 
-// Nova célula
-ListaGames* criarCelula(Game g) {
-    ListaGames* nova = (ListaGames*) malloc(sizeof(ListaGames));
-    nova->prox = NULL;
-    nova->game = g;
-    return nova;
+// árvore AVL
+AVL* criarAVL() {
+    AVL* avl = (AVL*)malloc(sizeof(AVL));
+    avl->raiz = NULL;
+    return avl;
 }
 
-// Iniciar lista
-void start() {
-    primeiro = criarCelula((Game){0}); // Nó cabeça
-    ultimo = primeiro;
+No* criarNo(Game game) {
+    No* novo = (No*)malloc(sizeof(No));
+    novo->game = game;
+    novo->esq = NULL;
+    novo->dir = NULL;
+    novo->nivel = 1;
+    return novo;
 }
 
-// Inserir no inicio
-void inserirInicio(Game game) {
-    ListaGames* tmp = criarCelula(game);
-    tmp->prox = primeiro->prox;
-    primeiro->prox = tmp;
+// Nível
+int getNivel(No* no) {
+    return (no == NULL) ? 0 : no->nivel;
+}
+
+// Setar nível
+void setNivel(No* no) {
+    int nivelEsq = getNivel(no->esq);
+    int nivelDir = getNivel(no->dir);
+    no->nivel = 1 + ((nivelEsq > nivelDir) ? nivelEsq : nivelDir);
+}
+
+// Rotações da AVL
+No* rotacionarDir(No* no) {
+    No* noEsq = no->esq;
+    No* noEsqDir = noEsq->dir;
+
+    noEsq->dir = no;
+    no->esq = noEsqDir;
+
+    setNivel(no);
+    setNivel(noEsq);
+
+    return noEsq;
+}
+
+No* rotacionarEsq(No* no) {
+    No* noDir = no->dir;
+    No* noDirEsq = noDir->esq;
+
+    noDir->esq = no;
+    no->dir = noDirEsq;
+
+    setNivel(no);
+    setNivel(noDir);
+
+    return noDir;
+}
+
+// Balancear a árvore AVL
+No* balancear(No* no) {
+    if (no != NULL) {
+        int fator = getNivel(no->dir) - getNivel(no->esq);
+        
+        // Se balanceada
+        if (fator >= -1 && fator <= 1) {
+            setNivel(no);
+        }
+        // Se desbalanceada para a direita
+        else if (fator == 2) {
+            int fatorFilhoDir = getNivel(no->dir->dir) - getNivel(no->dir->esq);
+            // Se o filho a direita também estiver desbalanceado
+            if (fatorFilhoDir == -1) {
+                no->dir = rotacionarDir(no->dir);
+            }
+            no = rotacionarEsq(no);
+        }
+        // Se desbalanceada para a esquerda
+        else if (fator == -2) {
+            int fatorFilhoEsq = getNivel(no->esq->dir) - getNivel(no->esq->esq);
+            // Se o filho a esquerda também estiver desbalanceado
+            if (fatorFilhoEsq == 1) {
+                no->esq = rotacionarEsq(no->esq);
+            }
+            no = rotacionarDir(no);
+        }
+    }
+    return no;
+}
+
+// Inserir na árvore AVL por ordem alfabetica
+No* inserirNo(No* i, Game game) {
+    if (i == NULL) {
+        i = criarNo(game);
+    } else if (strcmp(game.name, i->game.name) < 0) {
+        i->esq = inserirNo(i->esq, game);
+    } else if (strcmp(game.name, i->game.name) > 0) {
+        i->dir = inserirNo(i->dir, game);
+    } else {
+        // Trata Elementos duplicados
+        return i;
+    }
+    return balancear(i);
+}
+
+void inserir(AVL* avl, Game game) {
+    avl->raiz = inserirNo(avl->raiz, game);
+}
+
+// Pesquisar na árvore AVL
+bool pesquisarNo(No* i, char* nome) {
+    if (i == NULL) {
+        return false;
+    }
     
-    if (primeiro == ultimo) {
-        ultimo = tmp;
+    comparacoes++;
+    
+    if (strcmp(nome, i->game.name) == 0) {
+        return true;
+    } else if (strcmp(nome, i->game.name) < 0) {
+        printf("esq ");
+        return pesquisarNo(i->esq, nome);
+    } else {
+        printf("dir ");
+        return pesquisarNo(i->dir, nome);
     }
 }
 
-// Inserir no fim
-void inserirFim(Game game) {
-    ultimo->prox = criarCelula(game);
-    ultimo = ultimo->prox;
+bool pesquisar(AVL* avl, char* nome) {
+    printf("raiz ");
+    return pesquisarNo(avl->raiz, nome);
 }
 
-// Inserir em posição específica
-void inserirPos(Game game, int pos) {
-    int tamanho = 0;
-    ListaGames* i;
-    for (i = primeiro->prox; i != NULL; i = i->prox) tamanho++;
-    
-    if (pos < 0 || pos > tamanho) {
-        printf("Erro ao inserir. Posicao invalida!\n");
+// Caminhamento central 
+void caminharCentralNo(No* i) {
+    if (i != NULL) {
+        caminharCentralNo(i->esq);
+        printf("%s (nivel: %d)\n", i->game.name, i->nivel);
+        caminharCentralNo(i->dir);
+    }
+}
+
+void caminharCentral(AVL* avl) {
+    caminharCentralNo(avl->raiz);
+}
+
+// Liberar memória da árvore
+void liberarAVLNo(No* i) {
+    if (i != NULL) {
+        liberarAVLNo(i->esq);
+        liberarAVLNo(i->dir);
+        free(i);
+    }
+}
+
+void liberarAVL(AVL* avl) {
+    liberarAVLNo(avl->raiz);
+    free(avl);
+}
+
+// Log - evidencia que C é bem mais rápido mesmo 
+void escreverLog(const char* nomeArquivo, int comparacoes, double tempo) {
+    FILE* writer = fopen(nomeArquivo, "w");
+    if (writer == NULL) {
+        printf("Erro ao escrever log: %s\n", nomeArquivo);
         return;
-    } else if (pos == 0) {
-        inserirInicio(game);
-    } else if (pos == tamanho) {
-        inserirFim(game);
-    } else {
-        ListaGames* anterior = primeiro;
-        for (int j = 0; j < pos; j++) {
-            anterior = anterior->prox;
-        }
-        
-        ListaGames* tmp = criarCelula(game);
-        tmp->prox = anterior->prox;
-        anterior->prox = tmp;
     }
-}
-
-// Remover do início
-Game removerInicio() {
-    Game removido = {0};
-    
-    if (primeiro == ultimo) {
-        printf("Erro ao remover. Lista vazia!\n");
-        return removido;
-    }
-    
-    ListaGames* tmp = primeiro->prox;
-    removido = tmp->game;
-    primeiro->prox = tmp->prox;
-    
-    if (tmp == ultimo) {
-        ultimo = primeiro;
-    }
-    
-    free(tmp);
-    return removido;
-}
-
-// Remover do fim
-Game removerFim() {
-    Game removido = {0};
-    
-    if (primeiro == ultimo) {
-        printf("Erro ao remover. Lista vazia!\n");
-        return removido;
-    }
-
-    ListaGames* i;
-    for (i = primeiro; i->prox != ultimo; i = i->prox);
-    
-    removido = ultimo->game;
-    ListaGames* tmp = ultimo;
-    ultimo = i;
-    ultimo->prox = NULL;
-    free(tmp);
-    
-    return removido;
-}
-
-// Remover de qualquer posição
-Game removerPos(int pos) {
-    Game removido = {0};
-    int tamanho = 0;
-    ListaGames* i;
-    
-    if (primeiro == ultimo) {
-        printf("Erro ao remover. Lista vazia!\n");
-        return removido;
-    }
-    
-    for (i = primeiro->prox; i != NULL; i = i->prox) {
-        tamanho++;
-    }
-    
-    if (pos < 0 || pos >= tamanho) {
-        printf("Erro ao remover. Posicao invalida!\n");
-        return removido;
-    } else if (pos == 0) {
-        removido = removerInicio();
-    } else if (pos == tamanho - 1) {
-        removido = removerFim();
-    } else {
-        ListaGames* anterior = primeiro;
-        for (int j = 0; j < pos; j++) {
-            anterior = anterior->prox;
-        }
-        
-        ListaGames* tmp = anterior->prox;
-        removido = tmp->game;
-        anterior->prox = tmp->prox;
-        free(tmp);
-    }
-    
-    return removido;
-}
-
-void mostrar() {
-    int indice = 0;
-    for (ListaGames* i = primeiro->prox; i != NULL; i = i->prox, indice++) {
-        printf("[%d] ", indice);
-        imprimirGame(i->game);
-    }
-}
-
-// Liberar memória
-void liberarLista() {
-    while (primeiro != ultimo) {
-        removerInicio();
-    }
-    free(primeiro);
+    fprintf(writer, "874398\t%d\t%.5f\n", comparacoes, tempo);
+    fclose(writer);
 }
 
 int main() {
@@ -382,9 +402,12 @@ int main() {
     bool flag = false;
 
     int totalCarregados = carregarTodosGames();
+    if (totalCarregados == 0) {
+        printf("Nenhum jogo carregado. Encerrando.\n");
+        return 1;
+    }
 
-    // Inicializar lista
-    start();
+    AVL* avl = criarAVL();
 
     // Leitura dos IDs até encontrar FIM
     while (fgets(linha, sizeof(linha), stdin) != NULL && totalIds < MAX_IDS && !flag) {
@@ -398,90 +421,52 @@ int main() {
         }
     }
 
-    // Inserir jogos iniciais
+    // Inserir jogos na árvore AVL
     for (int i = 0; i < totalIds; i++) {
         Game* game = buscarGamePorID(idsDesejados[i]);
         if (game != NULL) {
-            inserirFim(*game);
+            inserir(avl, *game);
         } else {
             printf("Game com ID %d não encontrado\n", idsDesejados[i]);
         }
     }
 
-    // Ler número de operações
-    int numReg;
-    if (fgets(linha, sizeof(linha), stdin) != NULL) {
-        numReg = atoi(linha);
-    }
+    //Validar inserção
+    // caminharCentral(avl);
 
-    // Processar operações adicionais
-    for (int i = 0; i < numReg; i++) {
-        if (fgets(linha, sizeof(linha), stdin) == NULL) break;
-        
+    // Resetar flag 
+    flag = false;
+    
+    clock_t inicio, fim;
+    double tempo;
+
+    inicio = clock();
+    
+    // Realiza a leitura das entradas, pesquisa e imprime
+    while (fgets(linha, sizeof(linha), stdin) != NULL && !flag) {
         // Remover quebra de linha
         linha[strcspn(linha, "\n")] = 0;
         
-        char comando[10];
-        int param1 = 0, param2 = 0;
-        
-        // Parse da string lida
-        if (sscanf(linha, "%s %d %d", comando, &param1, &param2) >= 1) {
-            if (strcmp(comando, "II") == 0) {
-                // Inserir no início
-                Game* game = buscarGamePorID(param1);
-                if (game != NULL) {
-                    inserirInicio(*game);
-
-                }
-            }
-            else if (strcmp(comando, "I*") == 0) {
-                // Inserir em qualquer posição
-                Game* game = buscarGamePorID(param2);
-                if (game != NULL) {
-                    inserirPos(*game, param1);
-
-                }
-            }
-            else if (strcmp(comando, "IF") == 0) {
-                // Inserir no fim
-                Game* game = buscarGamePorID(param1);
-                if (game != NULL) {
-                    inserirFim(*game);
-
-                }
-            }
-            else if (strcmp(comando, "RI") == 0) {
-                // Remover do início - EXIBIR NO FORMATO (R) Nome
-                Game removido = removerInicio();
-                if (strlen(removido.name) > 0) {
-                    printf("(R) %s\n", removido.name);
-                }
-            }
-            else if (strcmp(comando, "R*") == 0) {
-                // Remover de qualquer posição - EXIBIR NO FORMATO (R) Nome
-                Game removido = removerPos(param1);
-                if (strlen(removido.name) > 0) {
-                    printf("(R) %s\n", removido.name);
-                }
-            }
-            else if (strcmp(comando, "RF") == 0) {
-                // Remover do fim - EXIBIR NO FORMATO (R) Nome
-                Game removido = removerFim();
-                if (strlen(removido.name) > 0) {
-                    printf("(R) %s\n", removido.name);
-                }
-            }
-            else {
-                printf("Operacao invalida: %s\n", comando);
+        if (strcmp(linha, "FIM") == 0) {
+            flag = true;
+        } else if (strlen(linha) > 0) {
+            printf("%s: ", linha);
+            bool encontrado = pesquisar(avl, linha);
+            if (encontrado) {
+                printf("SIM\n");
+            } else {
+                printf("NAO\n");
             }
         }
     }
-
-    // Imprimir lista final
-    mostrar();
     
+    fim = clock();
+    tempo = ((double)(fim - inicio)) / CLOCKS_PER_SEC;
+
+    escreverLog("874398_arvoreAVL.txt", comparacoes, tempo);
+
     // Liberar memória
-    liberarLista();
+    liberarAVL(avl);
     
     return 0;
 }
