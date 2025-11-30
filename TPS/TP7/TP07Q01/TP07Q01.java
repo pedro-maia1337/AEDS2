@@ -283,19 +283,19 @@ class ArvoreBinariaGames {
         No temp = i;
         if(temp == null) {
             comp = comp + 1;
-            System.out.printf("NAO\n");
+            System.out.printf(" NAO\n");
         } else if(nome.compareTo(temp.game.getName()) == 0) {
             comp = comp + 1;
-            System.out.printf("SIM\n");
+            System.out.printf(" SIM\n");
 
         } else if(nome.compareTo(temp.game.getName()) < 0) {
             comp = comp + 1;
-            System.out.print("esq ");
+            System.out.print(" esq ");
             comp += pesquisar(temp.esq, nome, comp);
 
         } else {
             comp = comp + 1;
-            System.out.print("dir ");
+            System.out.print(" dir ");
             comp += pesquisar(temp.dir, nome, comp);
         }
 
